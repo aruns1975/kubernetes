@@ -1,0 +1,111 @@
+Vagrant.configure("2") do |config|
+
+  #
+  # Environment Variables
+  #
+  SCRIPT_FOLDER  = "../scripts"
+  IMAGE_NAME     = "aruns1975/ubuntuk8s"
+  IMAGE_VERSION  = "3.0"
+
+  LOAD_BALANCER_NAME = "load-balancer"
+  LOAD_BALANCER_IP = "10.0.0.100"
+  LOAD_BALANCER_MEMORY = 1024
+  LOAD_BALANCER_CPU = 1
+
+  MASTER_NODE_PREFIX = "master-node-"
+  MASTER_NODE_IP_PREFIX = "10.0.0.10"
+  MASTER_COUNT   =3
+  MASTER_NODE_MEMORY = 4096
+  MASTER_NODE_CPU = 2
+
+  WORKER_NODE_PREFIX = "worker-node-"
+  WORKER_NODE_IP_PREFIX = "10.0.0.20"
+  WORKER_COUNT   = 2
+  WORKER_NODE_MEMORY = 2048
+  WORKER_NODE_CPU = 1
+  
+
+  #
+  # Creations of host entries on all the nodes
+  #
+  config.vm.provision "shell", inline: <<-SHELL
+      apt-get update -y
+      echo "10.0.0.100  load-balancer" >> /etc/hosts
+      echo "10.0.0.101  master-node-1" >> /etc/hosts
+      echo "10.0.0.102  master-node-2" >> /etc/hosts
+      echo "10.0.0.103  master-node-3" >> /etc/hosts
+      echo "10.0.0.201  worker-node-1" >> /etc/hosts
+      echo "10.0.0.202  worker-node-2" >> /etc/hosts
+      echo "10.0.0.203  worker-node-3" >> /etc/hosts
+  SHELL
+  
+  #
+  # Load Balancer
+  #
+  config.vm.define "#{LOAD_BALANCER_NAME}" do |lb|
+    lb.vm.box = IMAGE_NAME
+    lb.vm.box_version = IMAGE_VERSION
+    lb.vm.hostname = "#{LOAD_BALANCER_NAME}"
+    lb.vm.network "private_network", ip: "#{LOAD_BALANCER_IP}"
+    lb.vm.provider "virtualbox" do |v|
+      v.name = "#{LOAD_BALANCER_NAME}"
+      v.memory = "#{MASTER_NODE_MEMORY}"
+      v.cpus = "#{MASTER_NODE_CPU}"
+    end
+    lb.vm.provision "shell", path: "#{SCRIPT_FOLDER}/loadBalancer.sh"
+  end
+
+  #
+  # Master node configuration where all installation will happen
+  #
+  (1..1).each do |i|
+    config.vm.define "#{MASTER_NODE_PREFIX}#{i}" do |master|
+      master.vm.box = IMAGE_NAME
+      master.vm.box_version = IMAGE_VERSION
+      master.vm.hostname = "#{MASTER_NODE_PREFIX}#{i}"
+      master.vm.network "private_network", ip: "#{MASTER_NODE_IP_PREFIX}#{i}"
+      master.vm.provider "virtualbox" do |vb|
+          vb.memory = "#{MASTER_NODE_MEMORY}"
+          vb.cpus = "#{MASTER_NODE_CPU}"
+      vb.name="#{MASTER_NODE_PREFIX}#{i}"
+      end
+      master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master_ha.sh"
+    end
+  end
+
+  #
+  # Master node configuration where the master node just joins the other master
+  #
+  (2..MASTER_COUNT).each do |i|
+    config.vm.define "#{MASTER_NODE_PREFIX}#{i}" do |master|
+      master.vm.box = IMAGE_NAME
+      master.vm.box_version = IMAGE_VERSION
+      master.vm.hostname = "#{MASTER_NODE_PREFIX}#{i}"
+      master.vm.network "private_network", ip: "#{MASTER_NODE_IP_PREFIX}#{i}"
+      master.vm.provider "virtualbox" do |vb|
+          vb.memory = "#{MASTER_NODE_MEMORY}"
+          vb.cpus = "#{MASTER_NODE_CPU}"
+      vb.name="#{MASTER_NODE_PREFIX}#{i}"
+      end
+      master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/node_master.sh"
+    end
+  end
+  #
+  #Worker node configuration
+  #
+  (1..WORKER_COUNT).each do |i|
+    config.vm.define "#{WORKER_NODE_PREFIX}#{i}" do |node|
+      node.vm.box = IMAGE_NAME
+      node.vm.box_version = IMAGE_VERSION
+      node.vm.hostname = "#{WORKER_NODE_PREFIX}#{i}"
+      node.vm.network "private_network", ip: "#{WORKER_NODE_IP_PREFIX}#{i}"
+      node.vm.provider "virtualbox" do |vb|
+          vb.memory = "#{WORKER_NODE_MEMORY}"
+          vb.cpus = "#{WORKER_NODE_CPU}"
+      vb.name="#{WORKER_NODE_PREFIX}#{i}"
+      end
+      node.vm.provision "shell", path: "#{SCRIPT_FOLDER}/node.sh"
+    end 
+  end
+
+end
