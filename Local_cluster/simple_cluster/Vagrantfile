@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
   SCRIPT_FOLDER  = "../scripts"
   IMAGE_NAME     = "aruns1975/ubuntuk8s"
   IMAGE_VERSION  = "3.0"
-  WORKER_COUNT   = 2
+  WORKER_COUNT   = 1
 
   MASTER_NODE_PREFIX = "master-node-"
   MASTER_NODE_IP = "10.0.0.100"
