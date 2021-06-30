@@ -17,9 +17,9 @@ pipeline {
             steps {
                 input message: 'User input required'
                 input(
- id: 'userInput', message: 'Let\'s promote?', parameters: [
- [$class: 'TextParameterDefinition', defaultValue: 'uat', description: 'Environment', name: 'env'],
- [$class: 'TextParameterDefinition', defaultValue: 'uat1', description: 'Target', name: 'target']
+ id: 'userInput', message: 'Please Provide Docker hub credentials', parameters: [
+ [$class: 'TextParameterDefinition', defaultValue: '', description: 'Docker User Name', name: 'dockerUserName'],
+ [$class: 'PasswordParameterDefinition', defaultValue: '', description: 'Docker Password', name: 'dockerPassword']
 ])
             }
         }
