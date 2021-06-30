@@ -27,7 +27,7 @@ pipeline {
                              [$class: 'PasswordParameterDefinition', defaultValue: '', description: 'Docker Password', name: 'dockerPassword']
                         ]
                     )
-                echo 'The user name is ${env.credentials.dockerUserName} and the password is ${env.credentials.dockerPassword}'
+                echo "The user name is ${env.credentials.dockerUserName} and the password is ${env.credentials.dockerPassword}"
                 }
             }
         }
