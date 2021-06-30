@@ -26,7 +26,7 @@ pipeline {
                              [$class: 'PasswordParameterDefinition', defaultValue: '', description: 'Docker Password', name: 'dockerPassword']
                         ]
                 )
-                echo 'The user name is $PARAMETER.dockerUserName and the password is $PARAMS.dockerPassword)
+                echo 'The user name is $PARAMETER.dockerUserName and the password is $PARAMS.dockerPassword'
             }
         }
         stage('Deploy') {
