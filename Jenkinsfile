@@ -20,13 +20,13 @@ pipeline {
         }
         stage('Input Credentials') {
             steps {
-                input(
+               credentials = input(
                          id: 'userInput', message: 'Please Provide Docker hub credentials', parameters: [
                              [$class: 'TextParameterDefinition', defaultValue: '', description: 'Docker User Name', name: 'dockerUserName'],
                              [$class: 'PasswordParameterDefinition', defaultValue: '', description: 'Docker Password', name: 'dockerPassword']
                         ]
                 )
-                echo 'The user name is $PARAMETER.dockerUserName and the password is $PARAMS.dockerPassword'
+                echo 'The user name is ${credentials.dockerUserName} and the password is ${credentials.dockerPassword}'
             }
         }
         stage('Deploy') {
