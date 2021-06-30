@@ -17,6 +17,7 @@ pipeline {
             steps {
                 input message: 'User input required'
             }
+        }
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
