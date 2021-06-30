@@ -16,7 +16,7 @@ pipeline {
         stage('Proceed') {
             steps {
                 input message: 'User input required'
-                def userInput = input(
+                input(
  id: 'userInput', message: 'Let\'s promote?', parameters: [
  [$class: 'TextParameterDefinition', defaultValue: 'uat', description: 'Environment', name: 'env'],
  [$class: 'TextParameterDefinition', defaultValue: 'uat1', description: 'Target', name: 'target']
