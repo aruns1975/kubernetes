@@ -10,10 +10,13 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing..'
-                input message: 'User input required'
-
+                
             }
         }
+        stage('Proceed') {
+            steps {
+                input message: 'User input required'
+            }
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
