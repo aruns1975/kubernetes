@@ -10,9 +10,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing..'
-                input {
-                  message 'Enter your name?'
-                }
+                input message: 'User input required'
 
             }
         }
