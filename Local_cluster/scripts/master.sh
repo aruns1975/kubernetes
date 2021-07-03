@@ -100,69 +100,8 @@ sudo cp -i /vagrant/configs/config /home/vagrant/.kube/
 sudo chown 1000:1000 /home/vagrant/.kube/config
 EOF
 
-cat <<EOF | kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx-deployment
-spec:
-  selector:
-    matchLabels:
-      app: nginx
-  replicas: 2 # tells deployment to run 2 pods matching the template
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:1.14.2
-        ports:
-        - containerPort: 80
-EOF
-
-
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx-deployment
-  labels:
-    app: nginx
-spec:
-  type: NodePort
-  ports:
-  - port: 8080
-    nodePort: 30002
-    targetPort: 80
-    protocol: TCP
-  selector:
-    app: nginx
-EOF
-
 echo '[METALLB] Creating the name space for the metallb'
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/namespace.yaml
 
 echo '[METALLB] Installating metallb'
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/metallb.yaml
-
-echo '[METALLB] Configuring metallb pools'
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  namespace: metallb-system
-  name: config
-data:
-  config: |
-    address-pools:
-    - name: default
-      protocol: layer2
-      addresses:
-      - 10.0.0.50-10.0.0.90
-    - name: production-pool
-      protocol: layer2
-      addresses:
-      - 10.0.0.110-10.0.0.150
-EOF

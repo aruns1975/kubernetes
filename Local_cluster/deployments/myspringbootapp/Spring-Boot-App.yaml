@@ -1,0 +1,1 @@
+kubectl -f ../yamls/sample_springboot.yaml
