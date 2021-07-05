@@ -1,0 +1,40 @@
+Vagrant.configure("2") do |config|
+
+  #
+  # Environment Variables
+  #
+  SCRIPT_FOLDER  = "../../scripts"
+  IMAGE_NAME     = "ubuntu/focal64"
+  IMAGE_VERSION  = "20210624.0.0"
+
+  MACHINE_NAME   = "nfs-server"
+  MACHINE_IP    = "10.0.0.5"
+
+  #
+  # Creations of host entries on all the nodes
+  #
+  config.vm.provision "shell", path: "#{SCRIPT_FOLDER}/create_user.sh"
+  config.vm.provision "shell", path: "#{SCRIPT_FOLDER}/nfs-server.sh"
+  config.vm.provision "shell", inline: <<-SHELL
+      apt-get update -y
+      echo "10.0.0.5    nfs-server" >> /etc/hosts
+      echo "10.0.0.100  master-node-1" >> /etc/hosts
+      echo "10.0.0.101  worker-node-1" >> /etc/hosts
+      echo "10.0.0.102  worker-node-2" >> /etc/hosts
+  SHELL
+ 
+  #
+  # Master node configuration
+  #
+  config.vm.define "#{MACHINE_NAME}" do |master|
+    master.vm.box = IMAGE_NAME
+    master.vm.box_version = IMAGE_VERSION
+    master.vm.hostname = "#{MACHINE_NAME}"
+    master.vm.network "private_network", ip: MACHINE_IP
+    master.vm.provider "virtualbox" do |vb|
+        vb.memory = 2048
+        vb.cpus = 1
+    vb.name="#{MACHINE_NAME}"
+    end
+  end
+end

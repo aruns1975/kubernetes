@@ -6,4 +6,5 @@ sudo echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
 sudo systemctl reload sshd
 
 # Set Root password
+echo "[TASK 2] Set root password"
 sudo echo -e "kubeadmin\nkubeadmin" | passwd root >/dev/null 2>&1
