@@ -5,8 +5,8 @@ Vagrant.configure("2") do |config|
   #
   SCRIPT_FOLDER  = "../scripts"
   IMAGE_NAME     = "aruns1975/ubuntuk8s"
-  IMAGE_VERSION  = "3.0"
-  WORKER_COUNT   = 1
+  IMAGE_VERSION  = "4.0"
+  WORKER_COUNT   = 2
 
   MASTER_NODE_PREFIX = "master-node-"
   MASTER_NODE_IP = "10.0.0.100"
@@ -18,7 +18,6 @@ Vagrant.configure("2") do |config|
   #
   config.vm.provision "shell", path: "#{SCRIPT_FOLDER}/create_user.sh"
   config.vm.provision "shell", inline: <<-SHELL
-      apt-get update -y
       echo "10.0.0.100  master-node-1" >> /etc/hosts
       echo "10.0.0.101  worker-node-1" >> /etc/hosts
       echo "10.0.0.102  worker-node-2" >> /etc/hosts
@@ -37,10 +36,17 @@ Vagrant.configure("2") do |config|
         vb.cpus = 2
     vb.name="#{MASTER_NODE_PREFIX}1"
     end
-    master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master.sh"
+    master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_kube_server.sh"
+    master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_calico.sh"
+    master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_dashboard.sh"
+    master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_metric.sh"
+    master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_metal_lb.sh"
+    master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_helm.sh"
+    master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_promethus.sh"
+    # master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/install_helm.sh"
   end
   #
-  # Worker node configuration
+  # Worker node vagrant configuration
   #
   (1..WORKER_COUNT).each do |i|
     config.vm.define "#{WORKER_NODE_PREFIX}#{i}" do |node|
