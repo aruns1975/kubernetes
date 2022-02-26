@@ -14,3 +14,4 @@ buildNumber.properties
 configs/
 .vscode/
 node_modules
+CKAD/killer.sh
