@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
   SCRIPT_FOLDER  = "../scripts"
   IMAGE_NAME     = "aruns1975/ubuntuk8s"
   IMAGE_VERSION  = "4.0"
-  WORKER_COUNT   = 2
+  WORKER_COUNT   = 1
 
   MASTER_NODE_PREFIX = "master-node-"
   MASTER_NODE_IP = "10.0.0.100"
@@ -41,8 +41,10 @@ Vagrant.configure("2") do |config|
     master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_dashboard.sh"
     master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_metric.sh"
     master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_metal_lb.sh"
-    master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_helm.sh"
-   # master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_promethus.sh"
+    #master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_helm.sh"
+    #master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_contour.sh"
+    #master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_istio.sh"
+    #master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/master/install_promethus.sh"
     # master.vm.provision "shell", path: "#{SCRIPT_FOLDER}/install_helm.sh"
   end
   #
